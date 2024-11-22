@@ -1,8 +1,8 @@
 ﻿namespace Catalog.API.Products.CreateProduct;
 
-public record CreateProductRequest(string Name, List<string> Categories, string Description, string ImageFile, decimal Price);
+internal record CreateProductRequest(string Name, List<string> Categories, string Description, string ImageFile, decimal Price);
 
-public record CreateProductResponse(Guid Id);
+internal record CreateProductResponse(Guid Id);
 
 public class CreateProductEndpoint : ICarterModule
 {
@@ -13,7 +13,7 @@ public class CreateProductEndpoint : ICarterModule
             var command = request.Adapt<CreateProductCommand>();
             var result = await sender.Send(command);
             var response = result.Adapt<CreateProductResponse>();
-            return Results.CreatedAtRoute($"/products/{response.Id}", response);
+            return Results.Ok(response);
         })
             .WithName("CreateProduct")
             .Produces<CreateProductResponse>(StatusCodes.Status201Created)
