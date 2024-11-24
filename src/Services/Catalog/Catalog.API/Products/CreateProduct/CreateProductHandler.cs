@@ -1,22 +1,38 @@
-﻿namespace Catalog.API.Products.CreateProduct;
+﻿
+namespace Catalog.API.Products.CreateProduct;
 
 public record CreateProductCommand(string Name, List<string> Categories, string Description, string ImageFile, decimal Price)
     :ICommand<CreateProductResult>;
+
+public class CreateProductCommandValidator : AbstractValidator<CreateProductCommand>
+{
+    public CreateProductCommandValidator()
+    {
+        RuleFor(x => x.Name)
+            .NotEmpty().WithMessage("Name is required");
+        RuleFor(x => x.Categories)
+            .NotEmpty().WithMessage("Categories is required");
+        RuleFor(x => x.ImageFile)
+            .NotEmpty().WithMessage("ImageFile is required");
+        RuleFor(x => x.Price)
+            .GreaterThan(0).WithMessage("Price must be greater than 0");
+    }
+}
 
 public record CreateProductResult(Guid Id);
 
 internal class CreateProductCommandHandler(IDocumentSession session) : ICommandHandler<CreateProductCommand, CreateProductResult>
 {
-    public async Task<CreateProductResult> Handle(CreateProductCommand request, CancellationToken cancellationToken)
+    public async Task<CreateProductResult> Handle(CreateProductCommand command, CancellationToken cancellationToken)
     {
         // create product
         var product = new Product
         {
-            Name = request.Name,
-            Categories = request.Categories,
-            Description = request.Description,
-            ImageFile = request.ImageFile,
-            Price = request.Price,
+            Name = command.Name,
+            Categories = command.Categories,
+            Description = command.Description,
+            ImageFile = command.ImageFile,
+            Price = command.Price,
         };
         // save to database
         session.Store(product);
