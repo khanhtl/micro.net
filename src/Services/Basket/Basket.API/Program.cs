@@ -1,4 +1,5 @@
 
+using Basket.API.Data;
 using BuildingBlocks.Exceptions.Handler;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -28,6 +29,7 @@ builder.Services
     .AddHealthChecks()
     .AddNpgSql(builder.Configuration.GetConnectionString("Database")!);
 
+builder.Services.AddScoped<IBasketRepository, BasketRepository>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
